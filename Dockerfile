@@ -15,4 +15,4 @@ ENV RMQ_USERNAME guest
 ENV RMQ_PASSWORD guest
 ENV EXCLUDE_URLS .*twitter.com
 
-ENTRYPOINT ["python3", "-u","crawler/crawler.py", "https://avito.ru"]
+ENTRYPOINT ["python3", "-u","crawler/crawler.py", "https://vitkhab.github.io/search_engine_test_site/"]
