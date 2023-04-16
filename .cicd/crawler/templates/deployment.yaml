@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler
+  labels:
+    app: crawler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crawler
+  template:
+    metadata:
+      labels:
+        app: crawler
+    spec:
+      containers:
+      - name: crawler
+        image: lbnvd13.gitlab.yandexcloud.net:5050/project_dev/crawler:latest
+        env:
+        - name: MONGO
+          value: "mongodb.mongodb"
+        - name: RMQ_HOST
+          value: "rabbitmq.rabbitmq"
+        # - name: RMQ_USERNAME
+        #   value: "testuser1"
+        # - name: RMQ_PASSWORD
+        #   value: "1234"
+        {{- range $key, $value := .Values.env }}
+        - name: "{{ $key }}"
+          value: "{{ $value }}"
+        {{- end }}
+        # image: nginx
+        ports:
+        - containerPort: 8000
+          name: crawler
