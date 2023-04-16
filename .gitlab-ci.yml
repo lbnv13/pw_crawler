@@ -31,6 +31,12 @@ test:
 deploy:
   stage: deploy
   image: ${CI_REGISTRY}/project_dev/infra:latest
+  variables:
+    deploy_variable: "dev"
+  rules:
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master"'
+      variables:
+        deploy_variable: "prod" 
   before_script:
   - for VARNAME in $(env); do
       if [[ $( echo $VARNAME | egrep '^ENV_') ]]; then
@@ -43,4 +49,4 @@ deploy:
   script:
     - yc config set service-account-key $YC_TOKEN
     - yc managed-kubernetes cluster get-credentials test-cluster --external --force
-    - helm upgrade --install -n dev crawler ./.cicd/crawler $ENVVARS
+    - helm upgrade --install -n ${deploy_variable} crawler ./.cicd/crawler $ENVVARS
