@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: crawler
-        image: lbnvd13.gitlab.yandexcloud.net:5050/project_dev/crawler:latest
+        image: lbnvd13.gitlab.yandexcloud.net:5050/project_dev/crawler:{{ .Values.image }}
         env:
         - name: MONGO
           value: "mongodb.mongodb"

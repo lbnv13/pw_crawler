@@ -1,7 +1,8 @@
 stages:
   - build
   - test
-  - deploy
+  - deploy_stage
+  - deploy_prod
 
 
 build:
@@ -17,7 +18,7 @@ build:
             /kaniko/executor
             --context "${CI_PROJECT_DIR}"
             --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-            --destination "${CI_REGISTRY}/${CI_PROJECT_PATH}:latest"
+            --destination "${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_SHORT_SHA}"
 
 test:
   stage: test
@@ -29,7 +30,7 @@ test:
     - coverage report --include crawler/crawler.py
 
 deploy_to_stage:
-  stage: deploy
+  stage: deploy_stage
   image: ${CI_REGISTRY}/project_dev/infra:latest
   variables:
     deploy_variable: "dev"
@@ -48,14 +49,15 @@ deploy_to_stage:
     - helm upgrade --install -n ${deploy_variable} crawler ./.cicd/crawler $ENVVARS
 
 deploy_to_prod:
-  stage: deploy
+  stage: deploy_prod
   image: ${CI_REGISTRY}/project_dev/infra:latest
   variables:
     deploy_variable: "dev"
   rules:
     - if: $CI_COMMIT_BRANCH == 'main'
       variables:
-        deploy_variable: "prod" 
+        deploy_variable: "prod"
+  when: manual 
   before_script:
   - for VARNAME in $(env); do
       if [[ $( echo $VARNAME | egrep '^ENV_') ]]; then
@@ -68,4 +70,4 @@ deploy_to_prod:
   script:
     - yc config set service-account-key $YC_TOKEN
     - yc managed-kubernetes cluster get-credentials test-cluster --external --force
-    - helm upgrade --install -n ${deploy_variable} crawler ./.cicd/crawler $ENVVARS
+    - helm upgrade --install -n ${deploy_variable} crawler ./.cicd/crawler --set image=${CI_COMMIT_SHORT_SHA} $ENVVARS
