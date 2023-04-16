@@ -1,6 +1,6 @@
 stages:
-  - build
-  - test
+  # - build
+  # - test
   - deploy
 
 
@@ -43,7 +43,4 @@ deploy:
   script:
     - yc config set service-account-key $YC_TOKEN
     - yc managed-kubernetes cluster get-credentials test-cluster --external --force
-    - helm upgrade --install -n dev crawler ./.cicd/crawler \
-      $ENVVARS
-
-
+    - helm upgrade --install -n dev crawler ./.cicd/crawler $ENVVARS
