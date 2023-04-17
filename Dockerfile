@@ -13,6 +13,6 @@ ENV MONGO_PORT 27017
 ENV RMQ_HOST rabbitmq
 ENV RMQ_USERNAME guest
 ENV RMQ_PASSWORD guest
-ENV EXCLUDE_URLS '.*twitter.com, .*github.com'
+ENV EXCLUDE_URLS '.*github.com'
 
 ENTRYPOINT ["python3", "-u","crawler/crawler.py", "https://vitkhab.github.io/search_engine_test_site/"]
